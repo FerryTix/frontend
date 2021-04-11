@@ -8,10 +8,6 @@ WIDTH = 1280
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 screen.fill(color=Colors.BACKGROUND.value)
 
-# username_rect = pg.rect.Rect(screenwidth/2 - 1/8*screenwidth, screenheight*1/5, 1/4*screenwidth, username_title_render.get_height() + 10)
-# pg.draw.rect(screen, (0,0,0), username_rect,border_radius = 15)
-
-
 pygame.font.init()
 oxygen54 = pygame.font.SysFont(name = 'oxygensans', size = 54, bold = True)
 oxygen48 = pygame.font.SysFont(name = 'oxygensans', size = 48)
