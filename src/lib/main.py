@@ -18,7 +18,7 @@ oxygen48 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 48)
 oxygen36 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 36)
 oxygen24 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 24)
 
-navigation = 7
+navigation = 8
 
 
 def draw_secondary_header(heading, show_back, show_time):
@@ -100,6 +100,13 @@ def draw_payment_button(x, y):
     pygame.draw.rect(screen, Colors.GREEN.value, pygame.Rect(x, y, 200, 90), border_radius=25)
     tmp_r_txt = oxygen48.render("Zahlen", True, Colors.WHITE.value)
     screen.blit(tmp_r_txt, (x + (200 - tmp_r_txt.get_width()) / 2, y + (90 - tmp_r_txt.get_height()) / 2))
+
+def draw_payment_method_widget(x, y, text, img, img_width, img_height):
+    pygame.draw.rect(screen, Colors.GRAY2.value, pygame.Rect(x, y, 375, 418), border_radius=15)
+    tmp_r_txt = oxygen64.render(text, True, Colors.BLACK.value)
+    screen.blit(tmp_r_txt, (x + 188 - tmp_r_txt.get_width() / 2, y + 32))
+    tmp_img = pygame.image.load(img)
+    screen.blit(tmp_img, pygame.Rect(x + 188 - img_width / 2, y + 251 - img_height / 2, img_width, img_height))
 
 if navigation == 0:
     title_rect = pygame.Rect(0, 0, WIDTH, 200)
@@ -292,6 +299,18 @@ elif navigation == 7:
     draw_payment_button(966, 693)
 elif navigation == 8:
     draw_secondary_header("Zahlungsmittel wählen", True, True)
+
+    draw_payment_method_widget(50, 191, "FährCard", "src/resources/contactless_card.png", 194, 194)
+    draw_payment_method_widget(452, 191, "FährCard", "src/resources/jesus_holding_cash.png", 240, 240)
+    draw_payment_method_widget(854, 191, "FährCard", "src/resources/electronic_cash_logo.png", 188, 188)
+
+    pygame.draw.rect(screen, Colors.BLACK.value, pygame.Rect(0, 675, WIDTH, 1))
+
+    tmp_rendered_text = oxygen36.render("Betrag:", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, (373 + (255 - tmp_rendered_text.get_width()) / 2, 709 + (58 - tmp_rendered_text.get_height()) / 2))
+
+    tmp_rendered_text = oxygen64.render("12,70 €", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, (628 + (279 - tmp_rendered_text.get_width()) / 2, 695))
 pygame.display.flip()
 
 sleep(5)
