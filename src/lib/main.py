@@ -284,7 +284,7 @@ class Screen:
             tmp_rendered_text = oxygen48.render("Hauptmenü", True, Colors.WHITE.value)
             self.screen.blit(tmp_rendered_text, (440 + (400 - tmp_rendered_text.get_width()) / 2, 676 + 4 + (82 - tmp_rendered_text.get_height()) / 2))
         elif i == 5:
-            self.draw_secondary_header("Vielen Dank für Ihre Buchung.", False, False)
+            self.draw_secondary_header("Vielen Dank für Ihre Buchung.", None, False)
 
             pygame.draw.rect(self.screen, Colors.GRAY2.value, pygame.Rect(286, 127, 708, 442), border_radius=50)
             tmp_rendered_text = oxygen48.render("Erinnerungsfoto", True, Colors.GRAY3.value)
@@ -299,7 +299,7 @@ class Screen:
 
             self.draw_ticket_printing_controls()
         elif i == 6:
-            self.draw_secondary_header("Vielen Dank für Ihre Buchung.", False, False)
+            self.draw_secondary_header("Vielen Dank für Ihre Buchung.", None, False)
 
             tmp_image = pygame.image.load("src/resources/linus_sex_tips.png")
             self.screen.blit(tmp_image, pygame.Rect(286, 127, 708, 442))
