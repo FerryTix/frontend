@@ -17,7 +17,7 @@ oxygen48 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 48)
 oxygen36 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 36)
 oxygen24 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 24)
 
-navigation = 4
+navigation = 6
 
 
 def draw_secondary_header(heading, show_back, show_time):
@@ -29,7 +29,7 @@ def draw_secondary_header(heading, show_back, show_time):
         screen.blit(rendered_time, (1001 + (300 - rendered_time.get_width()) / 2, 13 + 77 / 2 - rendered_time.get_height() / 2))
     if show_back is True:
         rendered_back = oxygen36.render("Zurück", True, Colors.WHITE.value)
-        pygame.draw.rect(screen, Colors.RED.value, pygame.Rect(19, 11, 250, 70), border_radius=25, )
+        pygame.draw.rect(screen, Colors.RED2.value, pygame.Rect(19, 11, 250, 70), border_radius=25, )
         screen.blit(rendered_back, (86 + (183 - rendered_back.get_width()) / 2, 5 + 82 / 2 - rendered_back.get_height() / 2))
         back_arrow = pygame.image.load("src/resources/back_arrow.png")
         pygame.draw.rect(screen, Colors.WHITE.value, pygame.Rect(24, 16, 63.5, 60), border_radius=30)
@@ -53,11 +53,20 @@ def draw_bonus_display(x, y, text, text_color):
 
 def draw_small_info_box(x, y, primary_text, secondary_text):
     pygame.draw.rect(screen, Colors.GRAY2.value, pygame.Rect(x, y, 550, 200), border_radius=15)
-    tmp_rendered_text = oxygen48.render(primary_text, True, Colors.BLACK.value)
-    screen.blit(tmp_rendered_text, (x + (550 - tmp_rendered_text.get_width()) / 2, y + 18))
+    tmp_r_txt = oxygen48.render(primary_text, True, Colors.BLACK.value)
+    screen.blit(tmp_r_txt, (x + (550 - tmp_r_txt.get_width()) / 2, y + 18))
     pygame.draw.rect(screen, Colors.BLACK.value, pygame.Rect(x, y + 92, 550, 1))
-    tmp_rendered_text = oxygen48.render(secondary_text, True, Colors.BLACK.value)
-    screen.blit(tmp_rendered_text, (x + 550 - tmp_rendered_text.get_width() - 43, y + 116))
+    tmp_r_txt = oxygen48.render(secondary_text, True, Colors.BLACK.value)
+    screen.blit(tmp_r_txt, (x + 550 - tmp_r_txt.get_width() - 43, y + 116))
+
+
+def draw_ticket_printing_controls():
+    pygame.draw.rect(screen, Colors.BLACK.value, pygame.Rect(0, 654, WIDTH, 1))
+
+    pygame.draw.rect(screen, Colors.GREEN.value, pygame.Rect((WIDTH - 708) / 2, 672, 708, 100), border_radius=25)
+    tmp_r_txt = oxygen48.render("Ticket ausdrucken", True, Colors.WHITE.value)
+    screen.blit(tmp_r_txt, ((WIDTH - 708) / 2 + (709 - tmp_r_txt.get_width()) / 2, 672 + (100 - tmp_r_txt.get_height()) / 2))
+
 
 if navigation == 0:
     title_rect = pygame.Rect(0, 0, WIDTH, 200)
@@ -190,7 +199,7 @@ elif navigation == 4:
     tmp_rendered_text = oxygen48.render("Folgende Rückfahrten wurden eingelöst:", True, Colors.BLACK.value)
     screen.blit(tmp_rendered_text, ((WIDTH - tmp_rendered_text.get_width()) / 2, 110))
 
-    draw_small_info_box(52, 207, "Erwachsener + Fahrrad", "2") # 🚲 is a not supported unicode character
+    draw_small_info_box(52, 207, "Erwachsener + Fahrrad", "2")  # 🚲 is a not supported unicode character
     draw_small_info_box(678, 207, "Kind + Fahrrad", "4")
     draw_small_info_box(51, 443, "Ermäßigt + Fahrrad", "1")
 
@@ -199,8 +208,31 @@ elif navigation == 4:
     screen.blit(tmp_rendered_text, (440 + (400 - tmp_rendered_text.get_width()) / 2, 676 + 4 + (82 - tmp_rendered_text.get_height()) / 2))
 elif navigation == 5:
     draw_secondary_header("Vielen Dank für Ihre Buchung.", False, False)
+
+    pygame.draw.rect(screen, Colors.GRAY2.value, pygame.Rect(286, 127, 708, 442), border_radius=50)
+    tmp_rendered_text = oxygen48.render("Erinnerungsfoto", True, Colors.GRAY3.value)
+    screen.blit(tmp_rendered_text, (286 + (708 - tmp_rendered_text.get_width()) / 2, 127 + 88))
+    tmp_rendered_text = oxygen48.render("Hier drücken, um ein", True, Colors.GRAY3.value)
+    screen.blit(tmp_rendered_text, (286 + (708 - tmp_rendered_text.get_width()) / 2, 127 + 224))
+    tmp_rendered_text = oxygen48.render("Foto zu machen", True, Colors.GRAY3.value)
+    screen.blit(tmp_rendered_text, (286 + (708 - tmp_rendered_text.get_width()) / 2, 127 + 224 + oxygen48.get_linesize()))
+
+    draw_ticket_printing_controls()
 elif navigation == 6:
     draw_secondary_header("Vielen Dank für Ihre Buchung.", False, False)
+
+    tmp_image = pygame.image.load("src/resources/linus_sex_tips.png")
+    screen.blit(tmp_image, pygame.Rect(286, 127, 708, 442))
+
+    pygame.draw.rect(screen, Colors.BLUE.value, pygame.Rect(286, 127 + 442, 355, 62), border_bottom_left_radius=50)
+    tmp_rendered_text = oxygen48.render("neues Foto", True, Colors.WHITE.value)
+    screen.blit(tmp_rendered_text, (286 + (354 - tmp_rendered_text.get_width()) / 2, 127 + 442 + (62 - tmp_rendered_text.get_height()) / 2))
+
+    pygame.draw.rect(screen, Colors.RED.value, pygame.Rect(639, 127 + 442, 355, 62), border_bottom_right_radius=50)
+    tmp_rendered_text = oxygen48.render("Foto löschen", True, Colors.WHITE.value)
+    screen.blit(tmp_rendered_text, (639 + (354 - tmp_rendered_text.get_width()) / 2, 127 + 442 + (62 - tmp_rendered_text.get_height()) / 2))
+
+    draw_ticket_printing_controls()
 elif navigation == 7:
     draw_secondary_header("Buchung", True, True)
 elif navigation == 8:
