@@ -17,7 +17,7 @@ oxygen48 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 48)
 oxygen36 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 36)
 oxygen24 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 24)
 
-navigation = 3
+navigation = 4
 
 
 def draw_secondary_header(heading, show_back, show_time):
@@ -50,6 +50,14 @@ def draw_bonus_display(x, y, text, text_color):
     tmp_r_txt = oxygen36.render(text, True, text_color)
     screen.blit(tmp_r_txt, (x + (158 - tmp_r_txt.get_width()) / 2, y + (80 - tmp_r_txt.get_height()) / 2))
 
+
+def draw_small_info_box(x, y, primary_text, secondary_text):
+    pygame.draw.rect(screen, Colors.GRAY2.value, pygame.Rect(x, y, 550, 200), border_radius=15)
+    tmp_rendered_text = oxygen48.render(primary_text, True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, (x + (550 - tmp_rendered_text.get_width()) / 2, y + 18))
+    pygame.draw.rect(screen, Colors.BLACK.value, pygame.Rect(x, y + 92, 550, 1))
+    tmp_rendered_text = oxygen48.render(secondary_text, True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, (x + 550 - tmp_rendered_text.get_width() - 43, y + 116))
 
 if navigation == 0:
     title_rect = pygame.Rect(0, 0, WIDTH, 200)
@@ -178,6 +186,17 @@ elif navigation == 3:
     screen.blit(tmp_rendered_text, ((WIDTH - tmp_rendered_text.get_width()) / 2, 649))
 elif navigation == 4:
     draw_secondary_header("Rückfahrt eingelöst", True, True)
+
+    tmp_rendered_text = oxygen48.render("Folgende Rückfahrten wurden eingelöst:", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, ((WIDTH - tmp_rendered_text.get_width()) / 2, 110))
+
+    draw_small_info_box(52, 207, "Erwachsener + Fahrrad", "2") # 🚲 is a not supported unicode character
+    draw_small_info_box(678, 207, "Kind + Fahrrad", "4")
+    draw_small_info_box(51, 443, "Ermäßigt + Fahrrad", "1")
+
+    pygame.draw.rect(screen, Colors.GREEN.value, pygame.Rect(440, 676, 400, 90), border_radius=25)
+    tmp_rendered_text = oxygen48.render("Hauptmenü", True, Colors.WHITE.value)
+    screen.blit(tmp_rendered_text, (440 + (400 - tmp_rendered_text.get_width()) / 2, 676 + 4 + (82 - tmp_rendered_text.get_height()) / 2))
 elif navigation == 5:
     draw_secondary_header("Vielen Dank für Ihre Buchung.", False, False)
 elif navigation == 6:
