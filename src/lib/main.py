@@ -10,6 +10,7 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 screen.fill(color=Colors.BACKGROUND.value)
 
 pygame.font.init()
+oxygen96 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 96)
 oxygen72 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 72)
 oxygen64 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 64)
 oxygen54 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 54)  # Bold font has sizing problems
@@ -17,7 +18,7 @@ oxygen48 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 48)
 oxygen36 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 36)
 oxygen24 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 24)
 
-navigation = 6
+navigation = 7
 
 
 def draw_secondary_header(heading, show_back, show_time):
@@ -67,6 +68,38 @@ def draw_ticket_printing_controls():
     tmp_r_txt = oxygen48.render("Ticket ausdrucken", True, Colors.WHITE.value)
     screen.blit(tmp_r_txt, ((WIDTH - 708) / 2 + (709 - tmp_r_txt.get_width()) / 2, 672 + (100 - tmp_r_txt.get_height()) / 2))
 
+
+def draw_booking_widget(x, y, heading, bicycle_strikethrough, text_count, text_price_per_unit, text_result):
+    pygame.draw.rect(screen, Colors.GRAY2.value, pygame.Rect(x, y, 550, 250), border_radius=15)
+    tmp_image = pygame.image.load("src/resources/small_back_arrow.png")
+    screen.blit(tmp_image, pygame.Rect(x + 108, y + 25, 36, 36))
+    tmp_r_txt = oxygen48.render(heading, True, Colors.BLACK.value)
+    screen.blit(tmp_r_txt, (x + 290 - tmp_r_txt.get_width() / 2, y + 12))
+    tmp_image = pygame.image.load("src/resources/small_forward_arrow.png")
+    screen.blit(tmp_image, pygame.Rect(x + 550 - 78 - 36, y + 25, 36, 36))
+    pygame.draw.rect(screen, Colors.BLACK.value, pygame.Rect(x, y + 92, 551, 1))
+    tmp_image = pygame.image.load("src/resources/🚲.png")
+    screen.blit(tmp_image, pygame.Rect(x + 251, y + 109 - 34, 77, 37))
+    pygame.draw.rect(screen, Colors.BLACK.value, pygame.Rect(x, y + 182, 551, 1))
+    if bicycle_strikethrough is True:
+        tmp_image = pygame.image.load("src/resources/bicycle_strikethrough.png")
+        screen.blit(tmp_image, pygame.Rect(x + 250, y + 131 - 34, 88, 88))
+    tmp_r_txt = oxygen64.render("-", True, Colors.BLACK.value)
+    screen.blit(tmp_r_txt, (x + 26 + (69 - tmp_r_txt.get_width()) / 2, y + 165 + (93 - tmp_r_txt.get_height()) / 2))
+    pygame.draw.rect(screen, Colors.WHITE.value, pygame.Rect(x + 84, y + 186, 66, 51), border_radius=25)
+    tmp_r_txt = oxygen48.render(text_count, True, Colors.BLACK.value)
+    screen.blit(tmp_r_txt, (x + 84 + (66 - tmp_r_txt.get_width()) / 2, y + 186 + (51 - tmp_r_txt.get_height()) / 2))
+    tmp_r_txt = oxygen64.render("+", True, Colors.BLACK.value)
+    screen.blit(tmp_r_txt, (x + 141 + (69 - tmp_r_txt.get_width()) / 2, y + 169 + (86 - tmp_r_txt.get_height()) / 2))
+    tmp_r_txt = oxygen36.render(text_price_per_unit, True, Colors.BLACK.value)
+    screen.blit(tmp_r_txt, (x + 293 - tmp_r_txt.get_width() / 2, y + 186))
+    tmp_r_txt = oxygen36.render(text_result, True, Colors.BLACK.value)
+    screen.blit(tmp_r_txt, (x + 454 - tmp_r_txt.get_width() / 2, y + 186))
+
+def draw_payment_button(x, y):
+    pygame.draw.rect(screen, Colors.GREEN.value, pygame.Rect(x, y, 200, 90), border_radius=25)
+    tmp_r_txt = oxygen48.render("Zahlen", True, Colors.WHITE.value)
+    screen.blit(tmp_r_txt, (x + (200 - tmp_r_txt.get_width()) / 2, y + (90 - tmp_r_txt.get_height()) / 2))
 
 if navigation == 0:
     title_rect = pygame.Rect(0, 0, WIDTH, 200)
@@ -169,9 +202,7 @@ elif navigation == 2:
     screen.blit(tmp_rendered_text, (373 + (255 - tmp_rendered_text.get_width()) / 2, 709 + (58 - tmp_rendered_text.get_height()) / 2))
     tmp_rendered_text = oxygen64.render("50,00 €", True, Colors.BLACK.value)
     screen.blit(tmp_rendered_text, (628 + (279 - tmp_rendered_text.get_width()) / 2, 709 + (58 - tmp_rendered_text.get_height()) / 2))
-    pygame.draw.rect(screen, Colors.GREEN.value, pygame.Rect(966, 693, 200, 90), border_radius=25)
-    tmp_rendered_text = oxygen48.render("Zahlen", True, Colors.WHITE.value)
-    screen.blit(tmp_rendered_text, (966 + (200 - tmp_rendered_text.get_width()) / 2, 693 + (90 - tmp_rendered_text.get_height()) / 2))
+    draw_payment_button(966, 693)
 elif navigation == 3:
     draw_secondary_header("Rückfahrt einlösen", True, True)
 
@@ -235,6 +266,30 @@ elif navigation == 6:
     draw_ticket_printing_controls()
 elif navigation == 7:
     draw_secondary_header("Buchung", True, True)
+
+    draw_booking_widget(50, 130, "Erwachsener", False, "2", "x 3,00 € =", "6,00 €")
+    draw_booking_widget(680, 130, "Erwachsener", False, "4", "x 1,50 € =", "6,00 €")
+    draw_booking_widget(49, 403, "Ermäßigt", True, "1", "x 0,70 € =", "0,70 €")
+
+    pygame.draw.rect(screen, Colors.BLACK.value, pygame.Rect(0, 675, WIDTH, 1))
+
+    pygame.draw.rect(screen, Colors.BLUE.value, pygame.Rect(19, 703, 324, 70), border_radius=25)
+    tmp_rendered_text = oxygen36.render("Rückfahrt:", True, Colors.WHITE.value)
+    screen.blit(tmp_rendered_text, (19 + (250 - tmp_rendered_text.get_width()) / 2, 703 + (70 - tmp_rendered_text.get_height()) / 2))
+    tmp_image = pygame.image.load("src/resources/checkmark_solid.png")
+    screen.blit(tmp_image, pygame.Rect(19 + 260, 703 + 5, 60, 60))
+
+    tmp_rendered_text = oxygen36.render("Gesamtpreis:", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, (373 + (255 - tmp_rendered_text.get_width()) / 2, 709 + (58 - tmp_rendered_text.get_height()) / 2))
+
+    tmp_rendered_text = oxygen64.render("12,70 €", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, (628 + (279 - tmp_rendered_text.get_width()) / 2, 695))
+
+    pygame.draw.rect(screen, Colors.GREEN2.value, pygame.Rect(900, 475, 110, 110), border_radius=60)
+    tmp_rendered_text = oxygen96.render("+", True, Colors.WHITE.value)
+    screen.blit(tmp_rendered_text, (900 + (110 - tmp_rendered_text.get_width()) / 2, 475 + (110 - tmp_rendered_text.get_height()) / 2))
+
+    draw_payment_button(966, 693)
 elif navigation == 8:
     draw_secondary_header("Zahlungsmittel wählen", True, True)
 pygame.display.flip()
