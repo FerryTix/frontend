@@ -51,7 +51,7 @@ def draw_bonus_display(x, y, text, text_color):
     screen.blit(tmp_r_txt, (x + (158 - tmp_r_txt.get_width()) / 2, y + (80 - tmp_r_txt.get_height()) / 2))
 
 
-if navigation is 0:
+if navigation == 0:
     title_rect = pygame.Rect(0, 0, WIDTH, 200)
     pygame.draw.rect(screen, Colors.GRAY.value, title_rect)
 
@@ -86,7 +86,7 @@ if navigation is 0:
     pygame.draw.rect(screen, Colors.TEAL.value, return_rect, border_radius=25, )
     subtitle = oxygen36.render("Rückfahrt einlösen", True, Colors.BACKGROUND.value)
     screen.blit(subtitle, (x + (340 - subtitle.get_width()) / 2, y + (70 - subtitle.get_height()) // 2))
-elif navigation is 1:
+elif navigation == 1:
     draw_secondary_header("FährCard™", True, True)
 
     pygame.draw.rect(screen, Colors.GRAY2.value, pygame.Rect(50, 130, 1180, 621), border_radius=15)
@@ -99,7 +99,7 @@ elif navigation is 1:
 
     text = oxygen36.render("NFC-Leser aktiv… ⌛", True, Colors.BLACK.value)
     screen.blit(text, (50 + (1180 - text.get_width()) / 2, 649))
-elif navigation is 2:
+elif navigation == 2:
     draw_secondary_header("FährCard™", True, True)
 
     pygame.draw.rect(screen, Colors.GRAY2.value, pygame.Rect(50, 130, 590, 500), border_radius=15)
@@ -155,17 +155,17 @@ elif navigation is 2:
     pygame.draw.rect(screen, Colors.GREEN.value, pygame.Rect(966, 693, 200, 90), border_radius=25)
     tmp_rendered_text = oxygen48.render("Zahlen", True, Colors.WHITE.value)
     screen.blit(tmp_rendered_text, (966 + (200 - tmp_rendered_text.get_width()) / 2, 693 + (90 - tmp_rendered_text.get_height()) / 2))
-elif navigation is 3:
+elif navigation == 3:
     draw_secondary_header("Rückfahrt einlösen", True, True)
-elif navigation is 4:
+elif navigation == 4:
     draw_secondary_header("Rückfahrt eingelöst", True, True)
-elif navigation is 5:
+elif navigation == 5:
     draw_secondary_header("Vielen Dank für Ihre Buchung.", False, False)
-elif navigation is 6:
+elif navigation == 6:
     draw_secondary_header("Vielen Dank für Ihre Buchung.", False, False)
-elif navigation is 7:
+elif navigation == 7:
     draw_secondary_header("Buchung", True, True)
-elif navigation is 8:
+elif navigation == 8:
     draw_secondary_header("Zahlungsmittel wählen", True, True)
 pygame.display.flip()
 
