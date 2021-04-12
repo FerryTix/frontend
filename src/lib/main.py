@@ -331,9 +331,3 @@ for x in range(0, 8 + 1):
     draw_screen(x)
     sleep(2)
 quit()
-
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.MOUSEBUTTONUP:
-            print("Button Up!")
-            print(event)
