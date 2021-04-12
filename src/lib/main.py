@@ -17,7 +17,7 @@ oxygen48 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 48)
 oxygen36 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 36)
 oxygen24 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 24)
 
-navigation = 0
+navigation = 3
 
 
 def draw_secondary_header(heading, show_back, show_time):
@@ -157,6 +157,25 @@ elif navigation == 2:
     screen.blit(tmp_rendered_text, (966 + (200 - tmp_rendered_text.get_width()) / 2, 693 + (90 - tmp_rendered_text.get_height()) / 2))
 elif navigation == 3:
     draw_secondary_header("Rückfahrt einlösen", True, True)
+
+    tmp_image = pygame.image.load("src/resources/barcode_scanner.png")
+    screen.blit(tmp_image, pygame.Rect(0, 277, 706, 372))
+
+    tmp_rendered_text = oxygen48.render("Bitte halten Sie Ihr Ticket mit QR-Code", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, ((WIDTH - tmp_rendered_text.get_width()) / 2, 121))
+    tmp_rendered_text = oxygen48.render("vor die Kamera, mit einem Abstand von", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, ((WIDTH - tmp_rendered_text.get_width()) / 2, 121 + oxygen48.get_linesize()))
+    tmp_rendered_text = oxygen48.render("circa 20 cm.", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, ((WIDTH - tmp_rendered_text.get_width()) / 2, 121 + 2 * oxygen48.get_linesize()))
+
+    pygame.draw.rect(screen, Colors.GRAY2.value, pygame.Rect(758, 313, 423, 301), border_radius=25)
+    tmp_rendered_text = oxygen54.render("bild von der", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, (758 + (423 - tmp_rendered_text.get_width()) / 2, 313 + 95))
+    tmp_rendered_text = oxygen54.render("kamera", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, (758 + (423 - tmp_rendered_text.get_width()) / 2, 313 + 95 + oxygen54.get_linesize()))
+
+    tmp_rendered_text = oxygen36.render("QR-Code-Scanner aktiv… ⌛", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, ((WIDTH - tmp_rendered_text.get_width()) / 2, 649))
 elif navigation == 4:
     draw_secondary_header("Rückfahrt eingelöst", True, True)
 elif navigation == 5:
