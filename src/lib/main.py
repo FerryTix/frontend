@@ -18,7 +18,7 @@ oxygen48 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 48)
 oxygen36 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 36)
 oxygen24 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 24)
 
-navigation = 8
+navigation = 0
 
 
 def draw_secondary_header(heading, show_back, show_time):
@@ -118,31 +118,44 @@ if navigation == 0:
     screen.blit(title, ((WIDTH - title.get_width()) / 2, 42))
     screen.blit(subtitle, ((WIDTH - subtitle.get_width()) / 2, 119))
 
-    x, y = 50, 250
-    info_rect = pygame.Rect(x, y, 550, 400)
+    info_rect = pygame.Rect(50, 250, 550, 400)
     pygame.draw.rect(screen, Colors.GRAY2.value, info_rect, border_radius=15, )
+    tmp_rendered_text = oxygen48.render("Fährzeiten", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, (50 + 10, 250 + 1))
 
-    x, y = 680, 250
-    info_rect = pygame.Rect(x, y, 550, 400)
+    info_rect = pygame.Rect(680, 250, 550, 400)
     pygame.draw.rect(screen, Colors.GRAY2.value, info_rect, border_radius=15, )
+    tmp_rendered_text = oxygen48.render("Information", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, (680 + 114, 250 + 1))
+    tmp_rendered_text = oxygen36.render("Uhrzeit:", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, (680 + (250 - tmp_rendered_text.get_width()) / 2, 250 + 86 + (77 - tmp_rendered_text.get_height()) / 2))
+    tmp_rendered_text = oxygen48.render("15:06 Uhr", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, (680 + 250 + (300 - tmp_rendered_text.get_width()) / 2, 250 + 86 + (77 - tmp_rendered_text.get_height()) / 2))
+    tmp_rendered_text = oxygen36.render("Letzte Fahrt:", True, Colors.GRAY3.value)
+    screen.blit(tmp_rendered_text, (680 + (250 - tmp_rendered_text.get_width()) / 2, 250 + 165 + (77 - tmp_rendered_text.get_height()) / 2))
+    tmp_rendered_text = oxygen48.render("19:00 Uhr", True, Colors.GRAY3.value)
+    screen.blit(tmp_rendered_text, (680 + 250 + (300 - tmp_rendered_text.get_width()) / 2, 250 + 165 + (77 - tmp_rendered_text.get_height()) / 2))
+    tmp_rendered_text = oxygen36.render("Aktuell im Wartebereich:", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, (680 + (550 - tmp_rendered_text.get_width()) / 2, 250 + 242 + (77 - tmp_rendered_text.get_height()) / 2))
+    tmp_rendered_text = oxygen36.render("⬛ 17", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, (680 + 142 + (152 - tmp_rendered_text.get_width()) / 2, 250 + 309 + (91 - tmp_rendered_text.get_height()) / 2))
+    tmp_rendered_text = oxygen36.render("⬛ 11", True, Colors.BLACK.value)
+    screen.blit(tmp_rendered_text, (680 + 291 + (152 - tmp_rendered_text.get_width()) / 2, 250 + 309 + (91 - tmp_rendered_text.get_height()) / 2))
 
-    x, y = 440, 676
-    buy_ticket_rect = pygame.Rect(x, y, 400, 90)
+    buy_ticket_rect = pygame.Rect(440, 676, 400, 90)
     pygame.draw.rect(screen, Colors.GREEN.value, buy_ticket_rect, border_radius=25, )
     subtitle = oxygen36.render("Ticket kaufen", True, Colors.BACKGROUND.value)
     screen.blit(subtitle, ((WIDTH - subtitle.get_width()) / 2, 676 + (90 - subtitle.get_height()) // 2))
 
-    x, y = 895, 690
-    faehrcard_rect = pygame.Rect(x, y, 340, 70)
+    faehrcard_rect = pygame.Rect(895, 690, 340, 70)
     pygame.draw.rect(screen, Colors.BLUE.value, faehrcard_rect, border_radius=25, )
     subtitle = oxygen36.render("FährCard aufladen", True, Colors.BACKGROUND.value)
-    screen.blit(subtitle, (x + (340 - subtitle.get_width()) / 2, y + (70 - subtitle.get_height()) // 2))
+    screen.blit(subtitle, (895 + (340 - subtitle.get_width()) / 2, 690 + (70 - subtitle.get_height()) // 2))
 
-    x, y = 45, 690
-    return_rect = pygame.Rect(x, y, 340, 70)
+    return_rect = pygame.Rect(45, 690, 340, 70)
     pygame.draw.rect(screen, Colors.TEAL.value, return_rect, border_radius=25, )
     subtitle = oxygen36.render("Rückfahrt einlösen", True, Colors.BACKGROUND.value)
-    screen.blit(subtitle, (x + (340 - subtitle.get_width()) / 2, y + (70 - subtitle.get_height()) // 2))
+    screen.blit(subtitle, (45 + (340 - subtitle.get_width()) / 2, 690 + (70 - subtitle.get_height()) // 2))
 elif navigation == 1:
     draw_secondary_header("FährCard™", True, True)
 
