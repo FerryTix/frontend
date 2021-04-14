@@ -1,8 +1,9 @@
 import pygame
 from .colors import Colors
 import os
+import pathlib
 
-base_path = os.environ.get('BASE_PATH', '') + "frontend/resources/"
+base_path = (pathlib.Path(__file__).parent / pathlib.Path("frontend/resources/")).absolute()
 
 pygame.init()
 
@@ -11,13 +12,13 @@ WIDTH = 1280
 
 
 pygame.font.init()
-oxygen96 = pygame.font.Font(base_path + "Oxygen-Sans-Book.otf", 96)
-oxygen72 = pygame.font.Font(base_path + "Oxygen-Sans-Book.otf", 72)
-oxygen64 = pygame.font.Font(base_path + "Oxygen-Sans-Book.otf", 64)
-oxygen54 = pygame.font.Font(base_path + "Oxygen-Sans-Book.otf", 54)  # Bold font has sizing problems
-oxygen48 = pygame.font.Font(base_path + "Oxygen-Sans-Book.otf", 48)
-oxygen36 = pygame.font.Font(base_path + "Oxygen-Sans-Book.otf", 36)
-oxygen24 = pygame.font.Font(base_path + "Oxygen-Sans-Book.otf", 24)
+oxygen96 = pygame.font.Font(base_path / "Oxygen-Sans-Book.otf", 96)
+oxygen72 = pygame.font.Font(base_path / "Oxygen-Sans-Book.otf", 72)
+oxygen64 = pygame.font.Font(base_path / "Oxygen-Sans-Book.otf", 64)
+oxygen54 = pygame.font.Font(base_path / "Oxygen-Sans-Book.otf", 54)  # Bold font has sizing problems
+oxygen48 = pygame.font.Font(base_path / "Oxygen-Sans-Book.otf", 48)
+oxygen36 = pygame.font.Font(base_path / "Oxygen-Sans-Book.otf", 36)
+oxygen24 = pygame.font.Font(base_path / "Oxygen-Sans-Book.otf", 24)
 
 
 class Hitbox:
@@ -86,18 +87,18 @@ class Screen:
 
     def draw_booking_widget(self, x, y, heading, bicycle_strikethrough, text_count, text_price_per_unit, text_result):
         pygame.draw.rect(self.screen, Colors.GRAY2.value, pygame.Rect(x, y, 550, 250), border_radius=15)
-        tmp_image = pygame.image.load(base_path + "small_back_arrow.png")
+        tmp_image = pygame.image.load(base_path / "small_back_arrow.png")
         self.screen.blit(tmp_image, pygame.Rect(x + 108, y + 25, 36, 36))
         tmp_r_txt = oxygen48.render(heading, True, Colors.BLACK.value)
         self.screen.blit(tmp_r_txt, (x + 290 - tmp_r_txt.get_width() / 2, y + 12))
-        tmp_image = pygame.image.load(base_path + "small_forward_arrow.png")
+        tmp_image = pygame.image.load(base_path / "small_forward_arrow.png")
         self.screen.blit(tmp_image, pygame.Rect(x + 550 - 78 - 36, y + 25, 36, 36))
         pygame.draw.rect(self.screen, Colors.BLACK.value, pygame.Rect(x, y + 92, 551, 1))
-        tmp_image = pygame.image.load(base_path + "🚲.png")
+        tmp_image = pygame.image.load(base_path / "🚲.png")
         self.screen.blit(tmp_image, pygame.Rect(x + 251, y + 109 - 34, 77, 37))
         pygame.draw.rect(self.screen, Colors.BLACK.value, pygame.Rect(x, y + 182, 551, 1))
         if bicycle_strikethrough is True:
-            tmp_image = pygame.image.load(base_path + "bicycle_strikethrough.png")
+            tmp_image = pygame.image.load(base_path / "bicycle_strikethrough.png")
             self.screen.blit(tmp_image, pygame.Rect(x + 250, y + 131 - 34, 88, 88))
         tmp_r_txt = oxygen64.render("-", True, Colors.BLACK.value)
         self.screen.blit(tmp_r_txt, (x + 26 + (69 - tmp_r_txt.get_width()) / 2, y + 165 + (93 - tmp_r_txt.get_height()) / 2))
@@ -187,7 +188,7 @@ class Screen:
             info = oxygen48.render("Bitte halten Sie Ihre FährCard an den NFC-Leser.", True, Colors.BLACK.value)
             self.screen.blit(info, (50 + (1180 - info.get_width()) / 2, 171))
 
-            contactless_payment = pygame.image.load("contactless_payment.png")
+            contactless_payment = pygame.image.load(base_path / "contactless_payment.png")
             self.screen.blit(contactless_payment, pygame.Rect(257, 273, 766, 375))
 
             text = oxygen36.render("NFC-Leser aktiv… ⌛", True, Colors.BLACK.value)
@@ -217,9 +218,9 @@ class Screen:
             self.screen.blit(tmp_rendered_text, (50 + 590 - 41 - tmp_rendered_text.get_width(), 130 + 276))
             tmp_rendered_text = oxygen36.render("Thierschmidt", True, Colors.BLACK.value)
             self.screen.blit(tmp_rendered_text, (50 + 590 - 41 - tmp_rendered_text.get_width(), 130 + 276 + oxygen36.get_linesize()))
-            tmp_image = pygame.image.load(base_path + "tilted_heart.png")
+            tmp_image = pygame.image.load(base_path / "tilted_heart.png")
             self.screen.blit(tmp_image, pygame.Rect(146, 337, 347, 314))
-            tmp_image = pygame.image.load(base_path + "tilted_employee_text.png")
+            tmp_image = pygame.image.load(base_path / "tilted_employee_text.png")
             self.screen.blit(tmp_image, pygame.Rect(259, 437, 119, 105))
             tmp_rendered_text = oxygen36.render("Guthaben:", True, Colors.BLACK.value)
             self.screen.blit(tmp_rendered_text, (50 + 35, 130 + 411))
@@ -249,7 +250,7 @@ class Screen:
         elif i == 3:
             self.draw_secondary_header("Rückfahrt einlösen", lambda: self.draw_screen(0), True)
 
-            tmp_image = pygame.image.load(base_path + "barcode_scanner.png")
+            tmp_image = pygame.image.load(base_path / "barcode_scanner.png")
             self.screen.blit(tmp_image, pygame.Rect(0, 277, 706, 372))
             self.hitboxes.append(Hitbox(0, 277, 706, 372, lambda: self.draw_screen(4)))
 
@@ -300,7 +301,7 @@ class Screen:
         elif i == 6:
             self.draw_secondary_header("Vielen Dank für Ihre Buchung.", None, False)
 
-            tmp_image = pygame.image.load(base_path + "linus_sex_tips.png")
+            tmp_image = pygame.image.load(base_path / "linus_sex_tips.png")
             self.screen.blit(tmp_image, pygame.Rect(286, 127, 708, 442))
 
             pygame.draw.rect(self.screen, Colors.BLUE.value, pygame.Rect(286, 127 + 442, 355, 62), border_bottom_left_radius=50)
@@ -326,7 +327,7 @@ class Screen:
             pygame.draw.rect(self.screen, Colors.BLUE.value, pygame.Rect(19, 703, 324, 70), border_radius=25)
             tmp_rendered_text = oxygen36.render("Rückfahrt:", True, Colors.WHITE.value)
             self.screen.blit(tmp_rendered_text, (19 + (250 - tmp_rendered_text.get_width()) / 2, 703 + (70 - tmp_rendered_text.get_height()) / 2))
-            tmp_image = pygame.image.load(base_path + "checkmark_solid.png")
+            tmp_image = pygame.image.load(base_path / "checkmark_solid.png")
             self.screen.blit(tmp_image, pygame.Rect(19 + 260, 703 + 5, 60, 60))
 
             tmp_rendered_text = oxygen36.render("Gesamtpreis:", True, Colors.BLACK.value)
@@ -343,9 +344,9 @@ class Screen:
         elif i == 8:
             self.draw_secondary_header("Zahlungsmittel wählen", lambda: self.draw_screen(7), True)
 
-            self.draw_payment_method_widget(50, 191, "FährCard", base_path + "contactless_card.png", 194, 194)
-            self.draw_payment_method_widget(452, 191, "Bar-Geld", base_path + "jesus_holding_cash.png", 240, 240)
-            self.draw_payment_method_widget(854, 191, "EC-Karte", base_path + "electronic_cash_logo.png", 188, 188)
+            self.draw_payment_method_widget(50, 191, "FährCard", base_path / "contactless_card.png", 194, 194)
+            self.draw_payment_method_widget(452, 191, "Bar-Geld", base_path / "jesus_holding_cash.png", 240, 240)
+            self.draw_payment_method_widget(854, 191, "EC-Karte", base_path / "electronic_cash_logo.png", 188, 188)
 
             # TODO: Replace with real logic
             self.hitboxes.append(Hitbox(50, 191, 1179, 418, lambda: self.draw_screen(5)))
