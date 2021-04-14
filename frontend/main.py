@@ -51,7 +51,7 @@ class Screen:
             pygame.draw.rect(self.screen, Colors.RED2.value, pygame.Rect(19, 11, 250, 70), border_radius=25)
             self.hitboxes.append(Hitbox(19, 11, 250, 70, back_f))
             self.screen.blit(rendered_back, (86 + (183 - rendered_back.get_width()) / 2, 5 + 82 / 2 - rendered_back.get_height() / 2))
-            back_arrow = pygame.image.load(base_path + "back_arrow.png")
+            back_arrow = pygame.image.load(base_path / "back_arrow.png")
             pygame.draw.rect(self.screen, Colors.WHITE.value, pygame.Rect(24, 16, 63.5, 60), border_radius=30)
             self.screen.blit(back_arrow, pygame.Rect(24, 16, 63.5, 60))
 
