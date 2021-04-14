@@ -1,4 +1,3 @@
-from time import sleep
 import pygame
 from colors import Colors
 
@@ -17,6 +16,7 @@ oxygen48 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 48)
 oxygen36 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 36)
 oxygen24 = pygame.font.Font("src/resources/Oxygen-Sans-Book.otf", 24)
 
+
 class Hitbox:
     def __init__(self, x, y, width, height, f):
         self.x = x
@@ -24,11 +24,12 @@ class Hitbox:
         self.width = width
         self.height = height
         self.f = f
-    
+
     def collides_with(self, x, y):
         if((self.x <= x <= self.x + self.width) and (self.y <= y <= self.y + self.height)):
             return True
         return False
+
 
 class Screen:
     def __init__(self, screen):
@@ -51,7 +52,6 @@ class Screen:
             pygame.draw.rect(self.screen, Colors.WHITE.value, pygame.Rect(24, 16, 63.5, 60), border_radius=30)
             self.screen.blit(back_arrow, pygame.Rect(24, 16, 63.5, 60))
 
-
     def draw_add_balance_button(self, x, y, text, text_color):
         pygame.draw.rect(self.screen, Colors.GRAY2.value, pygame.Rect(x, y, 379, 100), border_radius=60)
         pygame.draw.rect(self.screen, Colors.GREEN2.value, pygame.Rect(x + 11, y + 10, 80, 80), border_radius=60)
@@ -60,12 +60,10 @@ class Screen:
         tmp_r_txt = oxygen64.render(text, True, text_color)
         self.screen.blit(tmp_r_txt, (x + 97 + (279 - tmp_r_txt.get_width()) / 2, y + 8 + (101 - tmp_r_txt.get_height()) / 2))
 
-
     def draw_bonus_display(self, x, y, text, text_color):
         pygame.draw.rect(self.screen, Colors.GRAY2.value, pygame.Rect(x, y, 158, 80), border_radius=60)
         tmp_r_txt = oxygen36.render(text, True, text_color)
         self.screen.blit(tmp_r_txt, (x + (158 - tmp_r_txt.get_width()) / 2, y + (80 - tmp_r_txt.get_height()) / 2))
-
 
     def draw_small_info_box(self, x, y, primary_text, secondary_text):
         pygame.draw.rect(self.screen, Colors.GRAY2.value, pygame.Rect(x, y, 550, 200), border_radius=15)
@@ -75,15 +73,13 @@ class Screen:
         tmp_r_txt = oxygen48.render(secondary_text, True, Colors.BLACK.value)
         self.screen.blit(tmp_r_txt, (x + 550 - tmp_r_txt.get_width() - 43, y + 116))
 
-
     def draw_ticket_printing_controls(self):
         pygame.draw.rect(self.screen, Colors.BLACK.value, pygame.Rect(0, 654, WIDTH, 1))
 
         pygame.draw.rect(self.screen, Colors.GREEN.value, pygame.Rect((WIDTH - 708) / 2, 672, 708, 100), border_radius=25)
-        self.hitboxes.append(Hitbox((WIDTH - 708) / 2, 672, 708, 100, lambda : self.draw_screen(0)))
+        self.hitboxes.append(Hitbox((WIDTH - 708) / 2, 672, 708, 100, lambda: self.draw_screen(0)))
         tmp_r_txt = oxygen48.render("Ticket ausdrucken", True, Colors.WHITE.value)
         self.screen.blit(tmp_r_txt, ((WIDTH - 708) / 2 + (709 - tmp_r_txt.get_width()) / 2, 672 + (100 - tmp_r_txt.get_height()) / 2))
-
 
     def draw_booking_widget(self, x, y, heading, bicycle_strikethrough, text_count, text_price_per_unit, text_result):
         pygame.draw.rect(self.screen, Colors.GRAY2.value, pygame.Rect(x, y, 550, 250), border_radius=15)
@@ -114,7 +110,7 @@ class Screen:
 
     def draw_payment_button(self, x, y):
         pygame.draw.rect(self.screen, Colors.GREEN.value, pygame.Rect(x, y, 200, 90), border_radius=25)
-        self.hitboxes.append(Hitbox(x, y, 200, 90, lambda : self.draw_screen(8))) # TODO: Different behaviour for recharging of FährCard
+        self.hitboxes.append(Hitbox(x, y, 200, 90, lambda: self.draw_screen(8)))  # TODO: Different behaviour for recharging of FährCard
         tmp_r_txt = oxygen48.render("Zahlen", True, Colors.WHITE.value)
         self.screen.blit(tmp_r_txt, (x + (200 - tmp_r_txt.get_width()) / 2, y + (90 - tmp_r_txt.get_height()) / 2))
 
@@ -163,27 +159,27 @@ class Screen:
             self.screen.blit(tmp_rendered_text, (680 + 291 + (152 - tmp_rendered_text.get_width()) / 2, 250 + 309 + (91 - tmp_rendered_text.get_height()) / 2))
 
             buy_ticket_rect = pygame.Rect(440, 676, 400, 90)
-            self.hitboxes.append(Hitbox(440, 676, 400, 90, lambda : self.draw_screen(7)))
+            self.hitboxes.append(Hitbox(440, 676, 400, 90, lambda: self.draw_screen(7)))
             pygame.draw.rect(self.screen, Colors.GREEN.value, buy_ticket_rect, border_radius=25, )
             subtitle = oxygen36.render("Ticket kaufen", True, Colors.BACKGROUND.value)
             self.screen.blit(subtitle, ((WIDTH - subtitle.get_width()) / 2, 676 + (90 - subtitle.get_height()) // 2))
 
             faehrcard_rect = pygame.Rect(895, 690, 340, 70)
-            self.hitboxes.append(Hitbox(895, 690, 340, 70, lambda : self.draw_screen(1)))
+            self.hitboxes.append(Hitbox(895, 690, 340, 70, lambda: self.draw_screen(1)))
             pygame.draw.rect(self.screen, Colors.BLUE.value, faehrcard_rect, border_radius=25, )
             subtitle = oxygen36.render("FährCard aufladen", True, Colors.BACKGROUND.value)
             self.screen.blit(subtitle, (895 + (340 - subtitle.get_width()) / 2, 690 + (70 - subtitle.get_height()) // 2))
 
             return_rect = pygame.Rect(45, 690, 340, 70)
-            self.hitboxes.append(Hitbox(45, 690, 340, 70, lambda : self.draw_screen(3)))
+            self.hitboxes.append(Hitbox(45, 690, 340, 70, lambda: self.draw_screen(3)))
             pygame.draw.rect(self.screen, Colors.TEAL.value, return_rect, border_radius=25, )
             subtitle = oxygen36.render("Rückfahrt einlösen", True, Colors.BACKGROUND.value)
             self.screen.blit(subtitle, (45 + (340 - subtitle.get_width()) / 2, 690 + (70 - subtitle.get_height()) // 2))
         elif i == 1:
-            self.draw_secondary_header("FährCard™", lambda : self.draw_screen(0), True)
+            self.draw_secondary_header("FährCard™", lambda: self.draw_screen(0), True)
 
             pygame.draw.rect(self.screen, Colors.GRAY2.value, pygame.Rect(50, 130, 1180, 621), border_radius=15)
-            self.hitboxes.append(Hitbox(50, 130, 1180, 621, lambda : self.draw_screen(2)))
+            self.hitboxes.append(Hitbox(50, 130, 1180, 621, lambda: self.draw_screen(2)))
 
             info = oxygen48.render("Bitte halten Sie Ihre FährCard an den NFC-Leser.", True, Colors.BLACK.value)
             self.screen.blit(info, (50 + (1180 - info.get_width()) / 2, 171))
@@ -194,7 +190,7 @@ class Screen:
             text = oxygen36.render("NFC-Leser aktiv… ⌛", True, Colors.BLACK.value)
             self.screen.blit(text, (50 + (1180 - text.get_width()) / 2, 649))
         elif i == 2:
-            self.draw_secondary_header("FährCard™", lambda : self.draw_screen(1), True)
+            self.draw_secondary_header("FährCard™", lambda: self.draw_screen(1), True)
 
             pygame.draw.rect(self.screen, Colors.GRAY2.value, pygame.Rect(50, 130, 590, 500), border_radius=15)
             tmp_rendered_text = oxygen36.render("Informationen zu Ihrer FährCard", True, Colors.BLACK.value)
@@ -248,11 +244,11 @@ class Screen:
             self.screen.blit(tmp_rendered_text, (628 + (279 - tmp_rendered_text.get_width()) / 2, 709 + (58 - tmp_rendered_text.get_height()) / 2))
             self.draw_payment_button(966, 693)
         elif i == 3:
-            self.draw_secondary_header("Rückfahrt einlösen", lambda : self.draw_screen(0), True)
+            self.draw_secondary_header("Rückfahrt einlösen", lambda: self.draw_screen(0), True)
 
             tmp_image = pygame.image.load("src/resources/barcode_scanner.png")
             self.screen.blit(tmp_image, pygame.Rect(0, 277, 706, 372))
-            self.hitboxes.append(Hitbox(0, 277, 706, 372, lambda : self.draw_screen(4)))
+            self.hitboxes.append(Hitbox(0, 277, 706, 372, lambda: self.draw_screen(4)))
 
             tmp_rendered_text = oxygen48.render("Bitte halten Sie Ihr Ticket mit QR-Code", True, Colors.BLACK.value)
             self.screen.blit(tmp_rendered_text, ((WIDTH - tmp_rendered_text.get_width()) / 2, 121))
@@ -270,7 +266,7 @@ class Screen:
             tmp_rendered_text = oxygen36.render("QR-Code-Scanner aktiv… ⌛", True, Colors.BLACK.value)
             self.screen.blit(tmp_rendered_text, ((WIDTH - tmp_rendered_text.get_width()) / 2, 649))
         elif i == 4:
-            self.draw_secondary_header("Rückfahrt eingelöst", lambda : self.draw_screen(3), True)
+            self.draw_secondary_header("Rückfahrt eingelöst", lambda: self.draw_screen(3), True)
 
             tmp_rendered_text = oxygen48.render("Folgende Rückfahrten wurden eingelöst:", True, Colors.BLACK.value)
             self.screen.blit(tmp_rendered_text, ((WIDTH - tmp_rendered_text.get_width()) / 2, 110))
@@ -280,7 +276,7 @@ class Screen:
             self.draw_small_info_box(51, 443, "Ermäßigt + Fahrrad", "1")
 
             pygame.draw.rect(self.screen, Colors.GREEN.value, pygame.Rect(440, 676, 400, 90), border_radius=25)
-            self.hitboxes.append(Hitbox(440, 676, 400, 90, lambda : self.draw_screen(0)))
+            self.hitboxes.append(Hitbox(440, 676, 400, 90, lambda: self.draw_screen(0)))
             tmp_rendered_text = oxygen48.render("Hauptmenü", True, Colors.WHITE.value)
             self.screen.blit(tmp_rendered_text, (440 + (400 - tmp_rendered_text.get_width()) / 2, 676 + 4 + (82 - tmp_rendered_text.get_height()) / 2))
         elif i == 5:
@@ -295,7 +291,7 @@ class Screen:
             self.screen.blit(tmp_rendered_text, (286 + (708 - tmp_rendered_text.get_width()) / 2, 127 + 224 + oxygen48.get_linesize()))
 
             # TODO: Replace with real logic
-            self.hitboxes.append(Hitbox(286, 127, 708, 442, lambda : self.draw_screen(6)))
+            self.hitboxes.append(Hitbox(286, 127, 708, 442, lambda: self.draw_screen(6)))
 
             self.draw_ticket_printing_controls()
         elif i == 6:
@@ -305,18 +301,18 @@ class Screen:
             self.screen.blit(tmp_image, pygame.Rect(286, 127, 708, 442))
 
             pygame.draw.rect(self.screen, Colors.BLUE.value, pygame.Rect(286, 127 + 442, 355, 62), border_bottom_left_radius=50)
-            self.hitboxes.append(Hitbox(286, 127 + 442, 355, 62, lambda : self.draw_screen(6)))
+            self.hitboxes.append(Hitbox(286, 127 + 442, 355, 62, lambda: self.draw_screen(6)))
             tmp_rendered_text = oxygen48.render("neues Foto", True, Colors.WHITE.value)
             self.screen.blit(tmp_rendered_text, (286 + (354 - tmp_rendered_text.get_width()) / 2, 127 + 442 + (62 - tmp_rendered_text.get_height()) / 2))
 
             pygame.draw.rect(self.screen, Colors.RED.value, pygame.Rect(639, 127 + 442, 355, 62), border_bottom_right_radius=50)
-            self.hitboxes.append(Hitbox(639, 127 + 442, 355, 62, lambda : self.draw_screen(5)))
+            self.hitboxes.append(Hitbox(639, 127 + 442, 355, 62, lambda: self.draw_screen(5)))
             tmp_rendered_text = oxygen48.render("Foto löschen", True, Colors.WHITE.value)
             self.screen.blit(tmp_rendered_text, (639 + (354 - tmp_rendered_text.get_width()) / 2, 127 + 442 + (62 - tmp_rendered_text.get_height()) / 2))
 
             self.draw_ticket_printing_controls()
         elif i == 7:
-            self.draw_secondary_header("Buchung", lambda : self.draw_screen(0), True)
+            self.draw_secondary_header("Buchung", lambda: self.draw_screen(0), True)
 
             self.draw_booking_widget(50, 130, "Erwachsener", False, "2", "x 3,00 € =", "6,00 €")
             self.draw_booking_widget(680, 130, "Erwachsener", False, "4", "x 1,50 € =", "6,00 €")
@@ -342,14 +338,14 @@ class Screen:
 
             self.draw_payment_button(966, 693)
         elif i == 8:
-            self.draw_secondary_header("Zahlungsmittel wählen", lambda : self.draw_screen(7), True)
+            self.draw_secondary_header("Zahlungsmittel wählen", lambda: self.draw_screen(7), True)
 
             self.draw_payment_method_widget(50, 191, "FährCard", "src/resources/contactless_card.png", 194, 194)
             self.draw_payment_method_widget(452, 191, "Bar-Geld", "src/resources/jesus_holding_cash.png", 240, 240)
             self.draw_payment_method_widget(854, 191, "EC-Karte", "src/resources/electronic_cash_logo.png", 188, 188)
 
             # TODO: Replace with real logic
-            self.hitboxes.append(Hitbox(50, 191, 1179, 418, lambda : self.draw_screen(5)))
+            self.hitboxes.append(Hitbox(50, 191, 1179, 418, lambda: self.draw_screen(5)))
 
             pygame.draw.rect(self.screen, Colors.BLACK.value, pygame.Rect(0, 675, WIDTH, 1))
 
@@ -360,14 +356,15 @@ class Screen:
             self.screen.blit(tmp_rendered_text, (628 + (279 - tmp_rendered_text.get_width()) / 2, 695))
         pygame.display.flip()
 
+
 ui = Screen(pygame.display.set_mode((WIDTH, HEIGHT)))
 ui.draw_screen(0)
 while True:
-      for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-               pygame.quit()
-            elif event.type == pygame.MOUSEBUTTONUP:
-                for hitbox in ui.hitboxes:
-                    epx, epy = event.pos
-                    if hitbox.collides_with(epx, epy):
-                        hitbox.f()
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+        elif event.type == pygame.MOUSEBUTTONUP:
+            for hitbox in ui.hitboxes:
+                epx, epy = event.pos
+                if hitbox.collides_with(epx, epy):
+                    hitbox.f()
