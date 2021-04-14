@@ -1,10 +1,10 @@
 {
     "python.languageServer": "Pylance",
-    "python.autoComplete.extraPaths": ["./src/lib"],
+    "python.autoComplete.extraPaths": ["./frontend"],
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": true,
     "python.jediEnabled": false,
-    "python.analysis.extraPaths": ["./src/lib"],
+    "python.analysis.extraPaths": ["./frontend"],
     "python.linting.pylintArgs": ["--extension-pkg-whitelist=pygame"],
     "python.formatting.provider": "autopep8",
     "python.formatting.autopep8Args": [
