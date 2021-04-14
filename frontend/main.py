@@ -1,9 +1,8 @@
 import pygame
 from .colors import Colors
-import os
 import pathlib
 
-base_path = (pathlib.Path(__file__).parent / pathlib.Path("frontend/resources/")).absolute()
+base_path = (pathlib.Path(__file__).parent / "resources").absolute()
 
 pygame.init()
 
