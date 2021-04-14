@@ -1,5 +1,5 @@
 import pygame
-from colors import Colors
+from .colors import Colors
 import os
 
 base_path = os.environ.get('BASE_PATH', '') + "frontend/resources/"
