@@ -1,2 +1,2 @@
-from colors import Colors
-from main import *
+from . import colors
+from . import main
