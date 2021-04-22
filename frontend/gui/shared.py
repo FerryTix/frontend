@@ -1,61 +1,6 @@
-from typing import Union, List, Dict
-from abc import ABC, abstractmethod
-
-
-class Drawable(ABC):
-    @abstractmethod
-    def tick(self, delta_t: float, **kwargs):
-        pass
-
-
-class DrawableConfig(ABC):
-    """Base class for the configuration of a drawable object."""
-    pass
-
-
-class NavigationEvent(ABC):
-    """Base class for all events that can change the state of the current menu, or
-    introduce a switch to another menu."""
-    pass
-
-
-class Overlay(Drawable, ABC):
-    class Config(DrawableConfig):
-        pass
-
-    def tick(self, delta_t: float, **kwargs):
-        pass
-
-
-class Screen(ABC, Drawable):
-    """Base class for a complete screen, that is drawn by calling its `tick` method.
-    A screen can have custom configuration settings, therefore it has a configuration class.
-    On a screen, there can be overlays, rendered in the order present.
-    """
-
-    def __init__(self, overlays=List[Overlay]):
-        self.overlays = overlays
-
-    class Config(DrawableConfig):
-        pass
-
-    def tick(self, delta_t: float, **kwargs):
-        pass
-
-
-class Menu(Drawable, ABC):
-    """A menu is a collection of screens"""
-
-    class Config(DrawableConfig):
-        pass
-
-    def __init__(self, entry_point: Screen, screens: List[Screen]):
-        super(Menu, self).__init__()
-        self.entry_point: Union[None, Screen] = entry_point
-        self.screens: Union[None, List[Screen]] = screens
-
-    def tick(self, delta_t: float, event: NavigationEvent, **kwargs):
-        pass
+from .base import Overlay, Screen, NavigationEvent, Event, Menu
+from typing import List, Union
+from abc import ABC
 
 
 class NavigationOverlay(Overlay):
@@ -68,5 +13,35 @@ class NavigationOverlay(Overlay):
     def __init__(self, config):
         super(NavigationOverlay, self).__init__(config=config)
 
-    def tick(self, delta_t: float, **kwargs):
-        return self, None
+    def tick(self, delta_t: float, events: List[Event], **kwargs) -> Union[None, NavigationEvent]:
+        return None
+
+
+class RootNavigationEvent(NavigationEvent):
+    class EventData(ABC):
+        pass
+
+    class SwitchMenu(EventData):
+        def __init__(self, target: Menu):
+            self.target = target
+
+    class ReturnHome(EventData):
+        pass
+
+    def __init__(self, event_data: EventData):
+        super(RootNavigationEvent, self).__init__(event_data)
+
+
+class MenuNavigationEvent(NavigationEvent):
+    class EventData(ABC):
+        pass
+
+    class PreviousScreen(EventData):
+        pass
+
+    class SwitchScreen(EventData):
+        def __init__(self, target: Screen):
+            pass
+
+    def __init__(self, event_data: EventData):
+        super(MenuNavigationEvent, self).__init__(event_data)
