@@ -1,6 +1,6 @@
-import pygame
-from .colors import Colors
 import pathlib
+import pygame
+from colors import Colors
 
 base_path = (pathlib.Path(__file__).parent / "resources").absolute()
 
