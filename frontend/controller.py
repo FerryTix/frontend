@@ -7,7 +7,7 @@ import gui
 
 
 class FrontendController(Thread):
-    FPS = 10
+    FPS = 5
     TICK = 1 / FPS
 
     def __init__(self, context, report_to: Queue, screen_config: gui.ScreenConfig):
@@ -30,10 +30,16 @@ class FrontendController(Thread):
 
     def handler(self):
         last_tick = datetime.now()
+        last_minute = datetime.now().minute
+        redraw = True
         while True:
             sleep(self.TICK)
             delta_t = (datetime.now() - last_tick).total_seconds()
             events = []
+
+            if datetime.now().minute != last_minute:
+                redraw = True
+                last_minute = datetime.now().minute
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -42,37 +48,42 @@ class FrontendController(Thread):
                     if event.type == pygame.MOUSEBUTTONUP:
                         x, y = event.pos
                     else:
-                        int(self.screen_config.WIDTH * event.x), int(self.screen_config.HEIGHT * event.y)
+                        x, y = int(self.screen_config.WIDTH * event.x), int(self.screen_config.HEIGHT * event.y)
                     if self.screen_config.TOUCHSCREEN_ROTATION == gui.Rotation.FLIPPED:
                         x = self.screen_config.WIDTH - x
                         y = self.screen_config.HEIGHT - y
                     events.append(gui.ClickEvent(x, y))
 
-            print('Tick!', delta_t)
             navigation_event = self.current_menu.tick(
+                redraw=redraw,
                 delta_t=delta_t,
                 events=events,
                 tasks=self.tasks,
                 report_to=self.report_to,
-                screen_config=self.screen_config,
-                screen=self.screen,
             )
-            # TODO: Change Menu
+
+            redraw = False
+
             if navigation_event:
-                if isinstance(navigation_event, gui.RootNavigationEvent):
-                    if isinstance(navigation_event.event_data, gui.RootNavigationEvent.SwitchMenu):
-                        self.current_menu = navigation_event.event_data.target
-                    elif isinstance(navigation_event.event_data, gui.RootNavigationEvent.ReturnHome):
-                        self.current_menu = self.MAIN_MENU
-                    elif isinstance(navigation_event.event_data, gui.RootNavigationEvent.NoAction):
-                        pass
+                redraw = True
+                if isinstance(navigation_event, gui.RequireDraw):
+                    pass
+                elif isinstance(navigation_event, gui.SwitchMenu):
+                    self.current_menu = navigation_event.target
+                elif isinstance(navigation_event, gui.ReturnHome):
+                    self.current_menu = self.MAIN_MENU
                 else:
                     raise RuntimeError("not expecting Events other than RootEvents at this level.")
 
+            print(f'\rFrame render time: {(datetime.now() - last_tick).total_seconds() - FrontendController.TICK}'
+                  f' {redraw}', end='')
             last_tick = datetime.now()
 
 
 if __name__ == '__main__':
+    import os
+
+    print(os.getpid())
     ctrl = FrontendController(
         context=None,
         report_to=Queue(),
