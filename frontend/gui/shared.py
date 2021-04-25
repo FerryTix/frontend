@@ -1,26 +1,23 @@
-from .base import Overlay, NavigationEvent, Event, HitBox, ClickEvent, NoAction
+from .base import Overlay, NavigationEvent, Event, HitBox, ClickEvent, NoAction, ReturnHome
 from datetime import datetime
-from typing import List
 from .constants import *
 from .colors import Colors
-from queue import Queue
 import pygame
 
 
 class NavigationOverlay(Overlay):
     def __init__(
             self, context, title: str,
-            on_back_button_press: NavigationEvent, on_success: NavigationEvent,
+            on_back_button_press: NavigationEvent = ReturnHome(),
             show_time: bool = True,
     ):
         self.back_button = HitBox(19, 11, 250, 70)
         self.title = title
         self.on_back_button_press = on_back_button_press
-        self.on_success = on_success
         self.show_time = show_time
         super(NavigationOverlay, self).__init__(context=context)
 
-    def draw(self, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue, **kwargs) -> None:
+    def draw(self, delta_t: float) -> None:
         heading = self.title
         screen = self.context.screen
 
@@ -46,12 +43,12 @@ class NavigationOverlay(Overlay):
             pygame.draw.rect(screen, Colors.WHITE, pygame.Rect(24, 16, 63.5, 60), border_radius=30)
             screen.blit(back_arrow, pygame.Rect(24, 16, 63.5, 60))
 
-    def tick(self, redraw, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue,
-             **kwargs) -> NavigationEvent:
+    def process_events(self, events) -> NavigationEvent:
         if self.on_back_button_press:
             for event in events:
                 if isinstance(event, ClickEvent):
                     if self.back_button.collides_with(event.x, event.y):
+                        print("On Back Button Press!")
                         return self.on_back_button_press
         return NoAction()
 
@@ -66,9 +63,9 @@ class PayOverlay(Overlay):
         self.title = price_title
         self.amount = amount
         self.on_back_button_press = on_pay_button_pressed
-        super(PayOverlay, self).__init__(context=context)
+        super(PayOverlay, self).__init__(context)
 
-    def draw(self, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue, **kwargs) -> None:
+    def draw(self, delta_t: float) -> None:
         tmp_rendered_text = oxygen36.render("Gesamtpreis:", True, Colors.BLACK)
         self.context.screen.blit(tmp_rendered_text, (
             373 + (255 - tmp_rendered_text.get_width()) / 2, 709 + (58 - tmp_rendered_text.get_height()) / 2))
@@ -90,8 +87,7 @@ class PayOverlay(Overlay):
         self.context.screen.blit(tmp_r_txt,
                                  (x + (200 - tmp_r_txt.get_width()) / 2, y + (90 - tmp_r_txt.get_height()) / 2))
 
-    def tick(self, redraw, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue,
-             **kwargs) -> NavigationEvent:
+    def process_events(self, events) -> NavigationEvent:
         if self.on_back_button_press:
             for event in events:
                 if isinstance(event, ClickEvent):

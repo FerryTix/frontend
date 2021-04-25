@@ -1,7 +1,6 @@
 from typing import List
 from datetime import datetime
 from .base import Screen, Menu, NavigationEvent, Event, HitBox, ClickEvent, Overlay, SwitchMenu, NoAction
-from queue import Queue
 from .constants import *
 from .colors import Colors
 
@@ -10,8 +9,7 @@ class TitleOverlay(Overlay):
     def __init__(self, context):
         super().__init__(context=context)
 
-    def tick(self, redraw, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue,
-             **kwargs) -> NavigationEvent:
+    def draw(self, delta_t: float) -> None:
         screen = self.context.screen
         screen_config = self.context.screen_config
 
@@ -24,6 +22,7 @@ class TitleOverlay(Overlay):
         screen.blit(title, ((screen_config.WIDTH - title.get_width()) / 2, 42))
         screen.blit(subtitle, ((screen_config.WIDTH - subtitle.get_width()) / 2, 119))
 
+    def process_events(self, events) -> NavigationEvent:
         return NoAction()
 
 
@@ -38,7 +37,7 @@ class WelcomeScreen(Screen):
         self.num_bikes = 0
         self.num_passengers = 0
 
-    def draw(self, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue, **kwargs) -> None:
+    def draw(self, delta_t: float) -> None:
         screen = self.context.screen
         screen.fill(color=Colors.BACKGROUND)
         screen_config = self.context.screen_config
@@ -91,12 +90,7 @@ class WelcomeScreen(Screen):
         subtitle = oxygen36.render("Rückfahrt einlösen", True, Colors.BACKGROUND)
         screen.blit(subtitle, (45 + (340 - subtitle.get_width()) / 2, 690 + (70 - subtitle.get_height()) // 2))
 
-        actions = []
-        for overlay in self.overlays:
-            res = overlay.tick(True, delta_t, events, tasks, report_to, **kwargs)
-            if res:
-                actions.append(res)
-
+        self.draw_overlays(delta_t)
         pygame.display.flip()
 
     def process_events(self, events) -> NavigationEvent:
@@ -113,6 +107,10 @@ class WelcomeScreen(Screen):
                         raise RuntimeError("Where my button??")
         return NoAction()
 
+    def process_overlay_events(self, overlay_events: List[NavigationEvent]) -> NavigationEvent:
+        print(overlay_events)
+        return NoAction()
+
 
 class MainMenu(Menu):
     class Buttons:
@@ -121,6 +119,9 @@ class MainMenu(Menu):
             self.TopUpFaehrCard = HitBox(x=895, y=690, width=340, height=70)  # 1
             self.UseReturnTicket = HitBox(x=45, y=690, width=340, height=70)  # 3
             self.all = self.BuyTicket, self.TopUpFaehrCard, self.UseReturnTicket
+
+    def process_screen_events(self, events) -> NavigationEvent:
+        return events[0]
 
     def __init__(self, context):
         self.vending_status = True

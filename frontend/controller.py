@@ -4,10 +4,13 @@ from datetime import datetime
 from time import sleep
 from queue import Queue
 import gui
+from pygame import camera
+
+camera.init()
 
 
 class FrontendController(Thread):
-    FPS = 5
+    FPS = 30
     TICK = 1 / FPS
 
     def __init__(self, context, report_to: Queue, screen_config: gui.ScreenConfig):
@@ -15,6 +18,7 @@ class FrontendController(Thread):
         self.report_to = report_to
         self.context = context
         self.screen_config = screen_config
+        self.camera = camera.Camera(camera.list_cameras()[0], (640, 480))
 
         if screen_config.FULLSCREEN:
             self.screen = pygame.display.set_mode((screen_config.WIDTH, screen_config.HEIGHT), pygame.FULLSCREEN)
@@ -58,8 +62,6 @@ class FrontendController(Thread):
                 redraw=redraw,
                 delta_t=delta_t,
                 events=events,
-                tasks=self.tasks,
-                report_to=self.report_to,
             )
 
             redraw = False
@@ -69,9 +71,13 @@ class FrontendController(Thread):
                 if isinstance(navigation_event, gui.RequireDraw):
                     pass
                 elif isinstance(navigation_event, gui.SwitchMenu):
+                    self.current_menu.exit()
                     self.current_menu = navigation_event.target
+                    self.current_menu.enter()
                 elif isinstance(navigation_event, gui.ReturnHome):
+                    self.current_menu.exit()
                     self.current_menu = self.MAIN_MENU
+                    self.current_menu.enter()
                 else:
                     raise RuntimeError("not expecting Events other than RootEvents at this level.")
 

@@ -3,6 +3,7 @@ from queue import Queue
 from abc import ABC, abstractmethod
 from enum import Enum
 import pygame
+from .colors import Colors
 
 
 class Rotation(Enum):
@@ -56,34 +57,23 @@ class NoAction(NavigationEvent):
 
 class Drawable(ABC):
     @abstractmethod
-    def draw(self, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue, **kwargs) -> None:
+    def draw(self, delta_t: float) -> None:
         return
 
     @abstractmethod
     def process_events(self, events) -> NavigationEvent:
         return NoAction()
-
-    @abstractmethod
-    def tick(self, redraw: bool, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue,
-             **kwargs) -> NavigationEvent:
-        pass
 
 
 class Overlay(Drawable):
     def __init__(self, context):
         self.context = context
 
-    def draw(self, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue, **kwargs) -> None:
+    def draw(self, delta_t: float) -> None:
         return
 
     def process_events(self, events) -> NavigationEvent:
         return NoAction()
-
-    def tick(self, redraw: bool, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue,
-             **kwargs) -> NavigationEvent:
-        if redraw:
-            self.draw(delta_t, events, tasks, report_to, **kwargs)
-        return self.process_events(events)
 
 
 class Screen(Drawable):
@@ -97,35 +87,22 @@ class Screen(Drawable):
         self.overlays = overlays
         self.context = context
 
-    def draw_overlays(self, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue,
-                      **kwargs) -> NavigationEvent:
-        overlay_events = []
+    def draw_overlays(self, delta_t: float) -> None:
         for overlay in self.overlays:
-            event = overlay.tick(True, delta_t, events, tasks, report_to, **kwargs)
-            if event:
-                overlay_events.append(event)
-        if overlay_events:
-            # return only one event, as to match signature.
-            # there is no way to determine which event happened first, so this is a viable approach
-            return overlay_events[0]
-        return NoAction()
-
-    def draw(self, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue, **kwargs) -> None:
-        return
+            overlay.draw(delta_t)
 
     def process_events(self, events) -> NavigationEvent:
+        overlay_events = [x for x in [ovl.process_events(events) for ovl in self.overlays] if x]
+        if overlay_events:
+            return self.process_overlay_events(overlay_events)
         return NoAction()
 
-    def tick(self, redraw: bool, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue,
-             **kwargs) -> NavigationEvent:
-        if redraw:
-            self.draw(delta_t, events, tasks, report_to, **kwargs)
-        screen_event = self.process_events(events=events)
-        overlay_event = self.draw_overlays(delta_t, events, tasks, report_to, **kwargs)
-        if screen_event:
-            return screen_event
-        if overlay_event:
-            return overlay_event
+    @abstractmethod
+    def draw(self, delta_t: float) -> None:
+        pass
+
+    @abstractmethod
+    def process_overlay_events(self, overlay_events: List[NavigationEvent]) -> NavigationEvent:
         return NoAction()
 
 
@@ -138,20 +115,31 @@ class Menu(Drawable):
         self.screens: Union[None, List[Screen]] = screens
         self.context = context
 
-    def draw(self, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue, **kwargs) -> None:
-        pass
+    def draw(self, delta_t: float) -> None:
+        self.context.screen.fill(color=Colors.BACKGROUND)
+        self.current_screen.draw(delta_t)
+        pygame.display.flip()
 
     def process_events(self, events) -> NavigationEvent:
-        return events
-
-    def tick(self, redraw: bool, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue,
-             **kwargs) -> NavigationEvent:
-        result = self.current_screen.tick(redraw, delta_t, events, tasks, report_to, **kwargs)
-        if redraw:
-            pygame.display.flip()
-        if result:
-            return self.process_events(result)
         return NoAction()
+
+    def tick(self, redraw: bool, delta_t: float, events: List[Event]) -> NavigationEvent:
+        if redraw:
+            self.draw(delta_t)
+        screen_event = self.current_screen.process_events(events)
+        if screen_event:
+            return self.process_screen_events(events=[screen_event])
+        return NoAction()
+
+    @abstractmethod
+    def process_screen_events(self, events) -> NavigationEvent:
+        pass
+
+    def enter(self):
+        pass
+
+    def exit(self):
+        pass
 
 
 class HitBox:

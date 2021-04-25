@@ -18,7 +18,7 @@ class ReturnTicketCheckBox(Overlay):
         self.checked = True
         super(ReturnTicketCheckBox, self).__init__(context)
 
-    def draw(self, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue, **kwargs) -> None:
+    def draw(self, delta_t: float) -> None:
         pygame.draw.rect(self.screen, Colors.BLACK, pygame.Rect(0, 675, self.context.screen_config.WIDTH, 1))
 
         pygame.draw.rect(self.screen, Colors.BLUE, pygame.Rect(19, 703, 324, 70), border_radius=25)
@@ -78,7 +78,7 @@ class TicketPositionWidget(Overlay):
         self.next_item_hb = HitBox(x=self.x + 550 - 78 - 36, y=self.y + 25, width=36, height=36)
         # TODO: self.close_button = HitBox(x=0, y=0, width=0, height=0)
 
-    def draw(self, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue, **kwargs) -> None:
+    def draw(self, delta_t: float) -> None:
         x, y = self.x, self.y
         ticket_price = ticket_prices[self.ticket_class][
             TicketClassNames.return_fare if self.return_ticket else TicketClassNames.single_fare
@@ -133,13 +133,10 @@ class TicketPositionWidget(Overlay):
 
 class BuyTicketScreen(Screen):
     def __init__(self, context, vending_status: bool = True):
-        super(BuyTicketScreen, self).__init__(context=context, overlays=[NavigationOverlay(
-            context=context,
-            title="Ticket kaufen",
-            on_back_button_press=ReturnHome(),
-            on_success=ReturnHome(),
-            show_time=True,
-        )])
+        super(BuyTicketScreen, self).__init__(context=context, overlays=[
+            NavigationOverlay(
+                context=context, title="Ticket kaufen")
+        ])
         self.vending_status = vending_status
         self.return_ticket = True,
         self.positions = [
@@ -156,13 +153,7 @@ class BuyTicketScreen(Screen):
                 context=context, on_pay_button_pressed=NoAction(),  # SwitchMenu(target=context.PAYMENT_MENU),
                 amount=self.calculate_sum(),
             ),
-            NavigationOverlay(
-                context=context,
-                title="Tickets kaufen",
-                on_back_button_press=ReturnHome(),
-                on_success=ReturnHome(),
-                show_time=True,
-            ),
+            NavigationOverlay(context=context, title="Tickets kaufen"),
             ReturnTicketCheckBox(
                 context=context,
             ),
@@ -178,15 +169,20 @@ class BuyTicketScreen(Screen):
             if isinstance(ovl, PayOverlay):
                 ovl.amount = self.calculate_sum()
 
-    def draw(self, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue, **kwargs) -> None:
+    def draw(self, delta_t: float) -> None:
         self.context.screen.fill(color=Colors.BACKGROUND)
 
         for position in self.positions:
-            position.draw(delta_t, events, tasks, report_to, **kwargs)
+            position.draw(delta_t)
         for ovl in self.overlays:
-            ovl.draw(delta_t, events, tasks, report_to, **kwargs)
+            ovl.draw(delta_t)
 
     def process_events(self, events) -> NavigationEvent:
+        for ovl in self.overlays:
+            evt = ovl.process_events(events)
+            if evt:
+                return evt
+
         widget_events = []
 
         for position in self.positions:
@@ -212,6 +208,12 @@ class BuyTicketScreen(Screen):
                     self.recalculate_amount()
                     return RequireDraw()
 
+    def process_overlay_events(self, overlay_events: List[NavigationEvent]) -> NavigationEvent:
+        for evt in overlay_events:
+            if evt:
+                return evt
+        return NoAction()
+
 
 class BuyTicketMenu(Menu):
     def __init__(self, context):
@@ -221,3 +223,15 @@ class BuyTicketMenu(Menu):
             screens=[self.buy_ticket_screen],
             context=context,
         )
+
+    def process_screen_events(self, events) -> NavigationEvent:
+        for evt in events:
+            if evt:
+                if isinstance(evt, ReturnHome):
+                    return evt
+                elif isinstance(evt, RequireDraw):
+                    return evt
+                else:
+                    # unhandled event
+                    raise NotImplementedError()
+        return NoAction()
