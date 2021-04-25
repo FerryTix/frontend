@@ -1,19 +1,20 @@
 from typing import List
-from .base import Screen, Menu, NavigationEvent, ScreenConfig, Event, HitBox, ClickEvent
+from datetime import datetime
+from .base import Screen, Menu, NavigationEvent, Event, HitBox, ClickEvent, Overlay, SwitchMenu, NoAction
 from queue import Queue
-from .shared import RootNavigationEvent, MenuNavigationEvent, Overlay
 from .constants import *
 from .colors import Colors
 
 
 class TitleOverlay(Overlay):
-    def __init__(self):
-        super(TitleOverlay, self).__init__()
+    def __init__(self, context):
+        super().__init__(context=context)
 
-    def tick(
-            self, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue,
-            screen_config: ScreenConfig, screen: pygame.Surface, **kwargs
-    ) -> NavigationEvent:
+    def tick(self, redraw, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue,
+             **kwargs) -> NavigationEvent:
+        screen = self.context.screen
+        screen_config = self.context.screen_config
+
         title_rect = pygame.Rect(0, 0, screen_config.WIDTH, 200)
         pygame.draw.rect(screen, Colors.GRAY, title_rect)
 
@@ -23,52 +24,24 @@ class TitleOverlay(Overlay):
         screen.blit(title, ((screen_config.WIDTH - title.get_width()) / 2, 42))
         screen.blit(subtitle, ((screen_config.WIDTH - subtitle.get_width()) / 2, 119))
 
-        return MenuNavigationEvent(event_data=MenuNavigationEvent.NoAction())
+        return NoAction()
 
 
 class WelcomeScreen(Screen):
-    class Config:
-        def __init__(self, vending_status: bool = True):
-            self.vending_status = vending_status
-
-    def __init__(self, config: Config):
-        super(WelcomeScreen, self).__init__(config=config, overlays=[TitleOverlay()])
-
-    def draw(self):
-        pass
-
-
-class MainMenu(Menu):
-    class Config:
-        def __init__(self, welcome_screen_config: WelcomeScreen.Config):
-            self.welcome_screen_config = welcome_screen_config
-
-    class Buttons:
-        def __init__(self):
-            self.BuyTicket = HitBox(x=440, y=676, width=400, height=90)  # 7
-            self.TopUpFaehrCard = HitBox(x=895, y=690, width=340, height=70)  # 1
-            self.UseReturnTicket = HitBox(x=45, y=690, width=340, height=70)  # 3
-            self.all = self.BuyTicket, self.TopUpFaehrCard, self.UseReturnTicket
-
-    def __init__(self, context):
-        self.config = MainMenu.Config(
-            welcome_screen_config=WelcomeScreen.Config(
-                vending_status=True,
-            )
-        )
+    def __init__(self, context, vending_status: bool = True):
+        super().__init__(context=context, overlays=[TitleOverlay(
+            context=context
+        )])
+        self.vending_status = vending_status
         self.buttons = MainMenu.Buttons()
-        self.welcome_screen = WelcomeScreen(config=self.config.welcome_screen_config)
-        super(MainMenu, self).__init__(
-            entry_point=self.welcome_screen,
-            screens=[self.welcome_screen],
-            context=context,
-        )
+        self.last_journey = "19:00 Uhr"
+        self.num_bikes = 0
+        self.num_passengers = 0
 
-    def tick(
-            self, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue,
-            screen_config: ScreenConfig, screen: pygame.Surface, **kwargs
-    ) -> NavigationEvent:
+    def draw(self, delta_t: float, events: List[Event], tasks: Queue, report_to: Queue, **kwargs) -> None:
+        screen = self.context.screen
         screen.fill(color=Colors.BACKGROUND)
+        screen_config = self.context.screen_config
 
         info_rect = pygame.Rect(50, 250, 550, 400)
         pygame.draw.rect(screen, Colors.GRAY2, info_rect, border_radius=15, )
@@ -82,22 +55,22 @@ class MainMenu(Menu):
         tmp_rendered_text = oxygen36.render("Uhrzeit:", True, Colors.BLACK)
         screen.blit(tmp_rendered_text, (
             680 + (250 - tmp_rendered_text.get_width()) / 2, 250 + 86 + (77 - tmp_rendered_text.get_height()) / 2))
-        tmp_rendered_text = oxygen48.render("15:06 Uhr", True, Colors.BLACK)
+        tmp_rendered_text = oxygen48.render(f"{datetime.now().time().strftime('%H:%M')} Uhr", True, Colors.BLACK)
         screen.blit(tmp_rendered_text, (680 + 250 + (300 - tmp_rendered_text.get_width()) / 2,
                                         250 + 86 + (77 - tmp_rendered_text.get_height()) / 2))
         tmp_rendered_text = oxygen36.render("Letzte Fahrt:", True, Colors.GRAY3)
         screen.blit(tmp_rendered_text, (
             680 + (250 - tmp_rendered_text.get_width()) / 2, 250 + 165 + (77 - tmp_rendered_text.get_height()) / 2))
-        tmp_rendered_text = oxygen48.render("19:00 Uhr", True, Colors.GRAY3)
+        tmp_rendered_text = oxygen48.render(self.last_journey, True, Colors.GRAY3)
         screen.blit(tmp_rendered_text, (680 + 250 + (300 - tmp_rendered_text.get_width()) / 2,
                                         250 + 165 + (77 - tmp_rendered_text.get_height()) / 2))
         tmp_rendered_text = oxygen36.render("Aktuell im Wartebereich:", True, Colors.BLACK)
         screen.blit(tmp_rendered_text, (
             680 + (550 - tmp_rendered_text.get_width()) / 2, 250 + 242 + (77 - tmp_rendered_text.get_height()) / 2))
-        tmp_rendered_text = oxygen36.render("⬛ 17", True, Colors.BLACK)
+        tmp_rendered_text = oxygen36.render(f"P: {self.num_passengers}", True, Colors.BLACK)
         screen.blit(tmp_rendered_text, (680 + 142 + (152 - tmp_rendered_text.get_width()) / 2,
                                         250 + 309 + (91 - tmp_rendered_text.get_height()) / 2))
-        tmp_rendered_text = oxygen36.render("⬛ 11", True, Colors.BLACK)
+        tmp_rendered_text = oxygen36.render(f"F: {self.num_bikes}", True, Colors.BLACK)
         screen.blit(tmp_rendered_text, (680 + 291 + (152 - tmp_rendered_text.get_width()) / 2,
                                         250 + 309 + (91 - tmp_rendered_text.get_height()) / 2))
 
@@ -119,29 +92,41 @@ class MainMenu(Menu):
         screen.blit(subtitle, (45 + (340 - subtitle.get_width()) / 2, 690 + (70 - subtitle.get_height()) // 2))
 
         actions = []
-        for overlay in self.welcome_screen.overlays:
-            res = overlay.tick(delta_t, events, tasks, report_to, screen_config, screen, **kwargs)
+        for overlay in self.overlays:
+            res = overlay.tick(True, delta_t, events, tasks, report_to, **kwargs)
             if res:
                 actions.append(res)
 
         pygame.display.flip()
 
+    def process_events(self, events) -> NavigationEvent:
         for event in events:
             if isinstance(event, ClickEvent):
                 for btn in self.buttons.all:
                     if btn.collides_with(x=event.x, y=event.y):
                         if btn is self.buttons.BuyTicket:
-                            return RootNavigationEvent(
-                                event_data=RootNavigationEvent.SwitchMenu(target=self.context.BUY_TICKET_MENU)
-                            )
+                            return SwitchMenu(target=self.context.BUY_TICKET_MENU)
                         elif btn is self.buttons.UseReturnTicket:
-                            return RootNavigationEvent(
-                                event_data=RootNavigationEvent.SwitchMenu(target=self.context.USE_RETURN_TICKET_MENU)
-                            )
+                            return SwitchMenu(target=self.context.USE_RETURN_TICKET_MENU)
                         elif btn is self.buttons.TopUpFaehrCard:
-                            return RootNavigationEvent(
-                                event_data=RootNavigationEvent.SwitchMenu(target=self.context.TOP_UP_MENU)
-                            )
+                            return SwitchMenu(target=self.context.TOP_UP_MENU)
                         raise RuntimeError("Where my button??")
+        return NoAction()
 
-        return RootNavigationEvent(event_data=RootNavigationEvent.NoAction())
+
+class MainMenu(Menu):
+    class Buttons:
+        def __init__(self):
+            self.BuyTicket = HitBox(x=440, y=676, width=400, height=90)  # 7
+            self.TopUpFaehrCard = HitBox(x=895, y=690, width=340, height=70)  # 1
+            self.UseReturnTicket = HitBox(x=45, y=690, width=340, height=70)  # 3
+            self.all = self.BuyTicket, self.TopUpFaehrCard, self.UseReturnTicket
+
+    def __init__(self, context):
+        self.vending_status = True
+        self.welcome_screen = WelcomeScreen(context=context, vending_status=self.vending_status)
+        super(MainMenu, self).__init__(
+            entry_point=self.welcome_screen,
+            screens=[self.welcome_screen],
+            context=context,
+        )
