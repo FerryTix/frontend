@@ -13,3 +13,4 @@ from . import top_up_menu
 from . import use_return_ticket_menu
 from . import colors
 from . import ticket_classes
+from .tools import format_amount
