@@ -16,7 +16,7 @@ class PaymentMethod:
 
 class ECCard(PaymentMethod):
     title = 'EC-karte'
-    icon = base_path / "contactless_card.png"
+    icon = base_path / "electronic_cash_logo.png"
     width = 194
 
 
@@ -28,7 +28,7 @@ class Cash(PaymentMethod):
 
 class FaehrCard(PaymentMethod):
     title = 'FährCard™'
-    icon = base_path / "electronic_cash_logo.png"
+    icon = base_path / "contactless_card.png"
     width = 188
 
 

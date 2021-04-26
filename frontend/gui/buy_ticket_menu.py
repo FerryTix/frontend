@@ -1,10 +1,11 @@
 from typing import List
-from . import Screen, Menu, Event, NavigationEvent, ReturnHome, NavigationOverlay, Overlay, NoAction, \
+from . import Screen, Menu, NavigationEvent, ReturnHome, NavigationOverlay, Overlay, NoAction, \
     MenuNavigationEvent, HitBox, ClickEvent, PayOverlay, SwitchMenu, RequireDraw
+from .payment_menu import PaymentMenu, ECCard, Cash, FaehrCard
 from .colors import Colors
 from .constants import *
-from queue import Queue
 from .ticket_classes import ticket_prices, TicketClassNames
+from .tools import format_amount
 
 
 class ReturnTicketCheckBox(Overlay):
@@ -86,10 +87,9 @@ class TicketPositionWidget(Overlay):
         heading = ticket_prices[self.ticket_class][TicketClassNames.title]
         bicycle_strikethrough = not ticket_prices[self.ticket_class][TicketClassNames.bike]
         text_count = str(self.ticket_count)
-        ticket_price_str = str(ticket_price).zfill(3)
-        sum_str = str(self.ticket_count * ticket_price).zfill(3)
-        text_price_per_unit = f'{ticket_price_str[:-2]},{ticket_price_str[-2:]} €'
-        text_result = f'{sum_str[:-2]},{sum_str[-2:]} €'
+
+        text_price_per_unit = format_amount(ticket_price)
+        text_result = format_amount(self.ticket_count * ticket_price)
 
         pygame.draw.rect(self.screen, Colors.GRAY2, pygame.Rect(x, y, 550, 250), border_radius=15)
         tmp_image = pygame.image.load(base_path / "small_back_arrow.png")
@@ -132,13 +132,10 @@ class TicketPositionWidget(Overlay):
 
 
 class BuyTicketScreen(Screen):
-    def __init__(self, context, vending_status: bool = True):
-        super(BuyTicketScreen, self).__init__(context=context, overlays=[
-            NavigationOverlay(
-                context=context, title="Ticket kaufen")
-        ])
+    def __init__(self, context, payment_menu: PaymentMenu, vending_status: bool = True):
         self.vending_status = vending_status
-        self.return_ticket = True,
+        self.return_ticket = True
+        self.payment_menu = payment_menu
         self.positions = [
             TicketPositionWidget(
                 context=context,
@@ -148,16 +145,16 @@ class BuyTicketScreen(Screen):
                 index=0,
             )
         ]
-        self.overlays = [
+        super(BuyTicketScreen, self).__init__(context=context, overlays=[
             PayOverlay(
-                context=context, on_pay_button_pressed=NoAction(),  # SwitchMenu(target=context.PAYMENT_MENU),
+                context=context, on_pay_button_pressed=SwitchMenu(target=self.payment_menu),
                 amount=self.calculate_sum(),
             ),
             NavigationOverlay(context=context, title="Tickets kaufen"),
             ReturnTicketCheckBox(
                 context=context,
             ),
-        ]
+        ])
 
     def calculate_sum(self):
         return sum(x.ticket_count * ticket_prices[x.ticket_class][
@@ -217,7 +214,18 @@ class BuyTicketScreen(Screen):
 
 class BuyTicketMenu(Menu):
     def __init__(self, context):
-        self.buy_ticket_screen = BuyTicketScreen(context=context, vending_status=True)
+        self.payment_menu = PaymentMenu(
+            context,
+            on_exit=self,
+            accepted_payment_methods=[
+                FaehrCard,
+                # ECCard,
+                Cash
+            ]
+        )
+
+        self.buy_ticket_screen = BuyTicketScreen(context=context, payment_menu=self.payment_menu)
+
         super(BuyTicketMenu, self).__init__(
             entry_point=self.buy_ticket_screen,
             screens=[self.buy_ticket_screen],
@@ -231,6 +239,12 @@ class BuyTicketMenu(Menu):
                     return evt
                 elif isinstance(evt, RequireDraw):
                     return evt
+                elif isinstance(evt, SwitchMenu):
+                    if evt.target == self.payment_menu:
+                        self.payment_menu.amount = self.buy_ticket_screen.calculate_sum()
+                        return evt
+                    else:
+                        raise NotImplementedError()
                 else:
                     # unhandled event
                     raise NotImplementedError()
